@@ -1,9 +1,26 @@
-<div data-role="view" data-title="Contacts" data-layout="main" data-model="APP.models.contacts">
-  <ul data-role="listview" data-style="inset" data-template="contactsTemplate" data-bind="source: ds"></ul>
+<div data-role="view"
+     data-title="Contacts"
+     data-layout="views-layout-contacts"
+     data-show="app.viewmodels.contacts">
+
+    <ul data-role="listview"
+        data-style="inset"
+        data-bind="source: contacts"
+        data-template="contacts-item-template"></ul>
 </div>
 
-<!-- this is the template used by the listview. template items are automatically
-     wrapped in an <li> by Kendo UI Mobile -->
-<script type="text/x-kendo-template" id="contactsTemplate">
-  <a data-bind="click: alert">#: data.name #</a>
+<script type="text/x-kendo-template" id="contacts-item-template">
+    <li>
+        <a style="display: block; text-decoration:none;" href="views/details.html?id=#: Id #&hasPic=#= HasPic #" data-role="button">
+            #: Contact.displayName #
+
+            <div style="float:right" data-align="right" data-role="button">
+                # if(HasPic === false){ #
+                <img width="20" src="styles/images/x.png" />
+                #} else {#
+                <img width="20" src="styles/images/tick.png" />
+                #}#
+            </div>
+        </a>
+    </li>
 </script>
