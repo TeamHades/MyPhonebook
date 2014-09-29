@@ -11,4 +11,19 @@
             transition: 'slide'
         });
     }, false);
+
+    document.addEventListener("offline", function () {
+        navigator.notification.confirm('There is no internet! Please check your connection. Exit now?',
+            onConfirmQuit,
+            'No internet connection',
+            new Array("Exit", "Cancel")
+        );
+
+        function onConfirmQuit(button) {
+            if (button == "1") {
+                navigator.app.exitApp();
+            }
+        }
+    }, false);
+
 }());
