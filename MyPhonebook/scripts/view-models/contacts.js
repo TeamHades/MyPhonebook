@@ -123,10 +123,23 @@ app.viewmodels = app.viewmodels || {};
     }
 
     function syncContacts(e) {
-        alert(e.data.name);
+                function findNewContacts(database, contacts) {
+            var newContacts = contacts.filter(function (x) {
+                for (var i = 0; i < database.length; i++) {
+                    if (_.isEqual(x, database[i])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            return newContacts;
+        }
     }
 
     scope.contacts = function (e) {
+        console.log("ddsd");
         loadContacts().then(function (result) {
             console.log(result.Result);
             var vm = kendo.observable({
