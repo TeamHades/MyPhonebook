@@ -2,6 +2,7 @@
 
 var http = http || HttpRequester;
 var app = app || {};
+
 app.viewmodels = app.viewmodels || {};
 
 (function (scope) {
@@ -17,13 +18,13 @@ app.viewmodels = app.viewmodels || {};
 
         var promise = new RSVP.Promise(function (resolve, reject) {
             navigator.contacts.find(fields,
-              function (contactsResponse) {
-                  window.contacts = contactsResponse;
-                  resolve(contactsResponse);
-              },
-              function (contactsResponse) {
-                  reject(contactsResponse);
-              }, options);
+                                    function (contactsResponse) {
+                                        window.contacts = contactsResponse;
+                                        resolve(contactsResponse);
+                                    },
+                                    function (contactsResponse) {
+                                        reject(contactsResponse);
+                                    }, options);
         });
 
         return promise;
@@ -33,10 +34,10 @@ app.viewmodels = app.viewmodels || {};
         var contactsToSend = [];
         for (var i = 0; i < contacts.length; i++) {
             contactsToSend.push({
-                Imei_id: imeiResponse.Result.Id,
-                Contact: contacts[i],
-                HasPic: false
-            });
+                                    Imei_id: imeiResponse.Result.Id,
+                                    Contact: contacts[i],
+                                    HasPic: false
+                                });
         }
 
         return http.postJSON(window.EverliveURL + '/Contacts', {}, contactsToSend);
@@ -123,19 +124,28 @@ app.viewmodels = app.viewmodels || {};
     }
 
     function syncContacts(e) {
-                function findNewContacts(database, contacts) {
-            var newContacts = contacts.filter(function (x) {
-                for (var i = 0; i < database.length; i++) {
-                    if (_.isEqual(x, database[i])) {
-                        return false;
+        //need the contacts already set from the database
+        //
+        navigator.notification.alert("Unfortunatelly we are still working on this service.");
+        loadContacts().then(function (result) {
+           // var newContacts = findNewContacts(,result.Result);
+            var imeiId = ''; //need imeiId
+            saveContactsOnServer(newContacts, imeiId);
+        });
+        
+        function findNewContacts(database, contacts) {
+                var newContacts = contacts.filter(function (x) {
+                    for (var i = 0; i < database.length; i++) {
+                        if (_.isEqual(x, database[i])) {
+                            return false;
+                        }
                     }
-                }
 
-                return true;
-            });
+                    return true;
+                });
 
-            return newContacts;
-        }
+                return newContacts;
+            }
     }
 
     scope.contacts = function (e) {
@@ -143,10 +153,10 @@ app.viewmodels = app.viewmodels || {};
         loadContacts().then(function (result) {
             console.log(result.Result);
             var vm = kendo.observable({
-                title: 'Contacts',
-                contacts: result.Result,
-                sync: syncContacts
-            });
+                                          title: 'Contacts',
+                                          contacts: result.Result,
+                                          sync: syncContacts
+                                      });
 
             kendo.bind(e.view.element, vm);
         });
