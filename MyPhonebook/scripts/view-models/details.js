@@ -175,7 +175,7 @@ app.viewmodels = app.viewmodels || {};
                        navigator.notification.alert("Unfortunately we could not get your contacts!");
                    }
                });
-
+        
         function onGetContactSuccess(data) {
             loadContactDetails(data.Result[0].Contact);
             loadPhoto(data.Result[0].Photo);
@@ -183,18 +183,20 @@ app.viewmodels = app.viewmodels || {};
         }
 
         function loadContactDetails(contact) {
-            var divForDetails = document.getElementById("contactDetails");
             var keys = _.keys(contact);
             var values = _.values(contact);
+            var contactDetails = [];
 
             for (var i = 0; i < keys.length; i++) {
-                if (values[i] !== null && values[i] !== '' && values[i] !== undefined) {
-                    var element = document.createElement("div");
-                    var innerHtml = keys[i] + ': ' + values[i];
-                    element.innerHTML = innerHtml;
-                    divForDetails.appendChild(element);
+                if (typeof(values[i]) !== 'object' && values[i] !== null && values[i] !== '' && values[i] !== undefined && keys[i].toLowerCase().indexOf("id") === -1) {
+                    contactDetails.push(keys[i] + ': ' + values[i]);
                 }
             }
+            
+            $("#contactDetails").kendoMobileListView({
+                        dataSource: contactDetails,
+                        template: "<div>#: data #</div>"
+                    });
         }
 
         function loadPhoto(photoId) {
@@ -218,12 +220,12 @@ app.viewmodels = app.viewmodels || {};
                    });
 
             function onGetPhotoUriSuccess(data) {
-                var divForPhoto = document.getElementById("photo");
-                var photo = document.createElement("img");
-                photo.setAttribute('src', data.Result.Uri);
-                photo.setAttribute('height', '150px');
-                photo.setAttribute('width', '200px');
-                divForPhoto.appendChild(photo);
+                var photos = [];
+                photos.push(data.Result.Uri);
+                 $("#photo").kendoMobileListView({
+                        dataSource: photos,
+                        template: "<div>Photo:</div><img src='#: data #'>"
+                    });
             }
         }
 
@@ -234,7 +236,7 @@ app.viewmodels = app.viewmodels || {};
 
             function initialize() {
                 var mapOptions = {
-                    zoom: 6,
+                    zoom: 8,
                     center: pos,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 };
