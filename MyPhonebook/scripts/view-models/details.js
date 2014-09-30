@@ -25,7 +25,7 @@ app.viewmodels = app.viewmodels || {};
 
         function gotLocation(coordinates) {
             location = coordinates;
-            getPhoto().then(gotPhoto);
+            getPhoto().then(gotPhoto, getContactDetails(contactId));
         }
 
         function gotPhoto(photo) {
@@ -64,11 +64,13 @@ app.viewmodels = app.viewmodels || {};
                                       },
                                       error: function (error) {
                                           navigator.notification.alert("Unfortunatelly we could not add the photo!");
+                                          getContactDetails(contactId);
                                       }
                                   });
                        },
                        error: function (error) {
                            navigator.notification.alert("Unfortunatelly we could not add the photo!");
+                           getContactDetails(contactId);
                        }
                    });
         }
@@ -89,6 +91,10 @@ app.viewmodels = app.viewmodels || {};
 
             var onPhotoError = function (error) {
                 navigator.notification.alert("Unfortunatelly we could not add the photo!");
+               // app.navigate("views/contacts.html");
+                windows.history.back();
+                history.go(-1);
+                navigator.app.backHistory();
                 reject(error);
             };
 
@@ -172,7 +178,7 @@ app.viewmodels = app.viewmodels || {};
                    error: function (error) {
                        console.log(error);
 
-                       navigator.notification.alert("Unfortunately we could not get your contacts!");
+                       navigator.notification.alert("Unfortunately we could not get your contact!");
                    }
                });
         
@@ -183,69 +189,90 @@ app.viewmodels = app.viewmodels || {};
         }
 
         function loadContactDetails(contact) {
+            var contactDetails = [];
+            contactDetails.push('Display name: ' + contact.displayName);
+            if (contact.phoneNumbers !== null) {
+                contactDetails.push('Phone number: ' + contact.phoneNumbers[0].value);
+            }
+            /*  
             var keys = _.keys(contact);
             var values = _.values(contact);
-            var contactDetails = [];
 
             for (var i = 0; i < keys.length; i++) {
-                if (typeof(values[i]) !== 'object' && values[i] !== null && values[i] !== '' && values[i] !== undefined && keys[i].toLowerCase().indexOf("id") === -1) {
-                    contactDetails.push(keys[i] + ': ' + values[i]);
-                }
+            if (typeof(values[i]) !== 'object' && values[i] !== null && values[i] !== '' && values[i] !== undefined && keys[i].toLowerCase().indexOf("id") === -1) {
+            contactDetails.push(keys[i] + ': ' + values[i]);
             }
+            } */
             
             $("#contactDetails").kendoMobileListView({
-                        dataSource: contactDetails,
-                        template: "<div>#: data #</div>"
-                    });
+                                                         dataSource: contactDetails,
+                                                         template: "<div>#: data #</div>"
+                                                     });
         }
 
         function loadPhoto(photoId) {
             console.dir(photoId);
-            var fieldsExp = {
-                Uri: 1
-            };
-            $.ajax({
-                       type: "GET",
-                       url: window.EverliveURL + '/Files/' + photoId,
-                       headers: {
-                    "X-Everlive-Fields": JSON.stringify(fieldsExp),
-                },
-                       contentType: "application/json",
-                       success: onGetPhotoUriSuccess,
-                       error: function (error) {
+            if (photoId !== null && photoId !== undefined) {
+                var fieldsExp = {
+                    Uri: 1
+                };
+                $.ajax({
+                           type: "GET",
+                           url: window.EverliveURL + '/Files/' + photoId,
+                           headers: {
+                        "X-Everlive-Fields": JSON.stringify(fieldsExp),
+                    },
+                           contentType: "application/json",
+                           success: onGetPhotoUriSuccess,
+                           error: onGetPhotoUriSuccess/*function (error) {
                            console.log(error);
 
                            navigator.notification.alert("Unfortunately we could not get your contact's photo!");
-                       }
-                   });
+                           }  */
+                       });
+            }
 
             function onGetPhotoUriSuccess(data) {
                 var photos = [];
-                photos.push(data.Result.Uri);
-                 $("#photo").kendoMobileListView({
-                        dataSource: photos,
-                        template: "<div>Photo:</div><img src='#: data #'>"
-                    });
+                var template = "<div>Photo:</div><img src='#: data #'>";
+                if (data !== null && data !== null && data.Result !== null && data.Result !== undefined) {
+                    photos.push(data.Result.Uri);
+                    
+                    $("#photo").kendoMobileListView({
+                                                        dataSource: photos,
+                                                        template: template
+                                                    });
+                }
             }
         }
 
         function loadMap(coordinates) {
             var map;
-            var pos = new google.maps.LatLng(coordinates.latitude, coordinates.longitude);
-            console.dir(coordinates);
-
+            var pos;
             function initialize() {
                 var mapOptions = {
-                    zoom: 8,
+                    zoom: 10,
                     center: pos,
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 };
 
                 map = new google.maps.Map(document.getElementById('map-canvas'),
                                           mapOptions);
+                
+                var marker = new google.maps.Marker({
+                                                        position: map.getCenter(),
+                                                        map: map,
+                                                        title: 'Click to zoom'
+                                                    });
             }
+            
+            if (coordinates !== null && coordinates !== undefined) {
+                var map;
+                pos = new google.maps.LatLng(coordinates.latitude, coordinates.longitude);
+                console.dir(coordinates);
 
-            google.maps.event.addDomListener(window, 'load', initialize());
+                google.maps.event.addDomListener(window, 'load', initialize());
+            }
         }
     }
 

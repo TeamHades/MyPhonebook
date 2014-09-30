@@ -126,8 +126,8 @@ app.viewmodels = app.viewmodels || {};
     function syncContacts(e) {
         //need the contacts already set from the database
         //
-        navigator.notification.alert("Unfortunatelly we are still working on this service.");
-        loadContacts().then(function (result) {
+       navigator.notification.alert("Sorry, but we are still working on this service.");
+       /*  loadContacts().then(function (result) {
            // var newContacts = findNewContacts(,result.Result);
             var imeiId = ''; //need imeiId
             saveContactsOnServer(newContacts, imeiId);
@@ -145,7 +145,7 @@ app.viewmodels = app.viewmodels || {};
                 });
 
                 return newContacts;
-            }
+            } */
     }
 
     scope.contacts = function (e) {
