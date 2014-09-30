@@ -14,8 +14,10 @@
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 
         <script src="scripts/app.js"></script>
+
     </head>
     <body>
+
         <div data-role="layout" data-id="views-layout">
             <div data-role="header">
                 <div data-role="navbar">
@@ -29,10 +31,13 @@
                 </div>
             </div>
         </div>
-        <div data-role="view" data-layout="views-layout" data-title="Phonebook2">
+        <div data-role="view" data-layout="views-layout" data-title="Image Phonebook" data-show="app.viewmodels.connection">
             <h1>
-                Welcome to Phonebook2
+                Welcome to Image Phonebook
             </h1>
+            <div style="margin: 10px; border: 2px solid green; height: 200px; padding: 20px">
+                <span data-bind="html: connection"></span>
+            </div>
         </div>
         <div data-role="layout" data-id="views-layout-contacts">
             <div data-role="header">
@@ -61,11 +66,9 @@
                 </div>
             </div>
         </div>
-        
         <script src="scripts/view-models/contacts.js"></script>
         <script src="scripts/view-models/details.js"></script>
-        
-        <!--<script src="scripts/view-models/home.js"></script>-->
+        <script src="scripts/view-models/home.js"></script>
     
     </body>
 </html>
